@@ -22,6 +22,10 @@ class request{
 	 */
 	private $param = array();
 	/**
+	 * USER_AGENT
+	 */
+	private $user_agent;
+	/**
 	 * ダイナミックパスパラメータ
 	 */
 	private $dynamic_path_param = array();
@@ -69,7 +73,7 @@ class request{
 	}
 
 	/**
-	 *	入力パラメータを解析する。
+	 *	入力値を解析する。
 	 * 
 	 * `$_GET`, `$_POST`, `$_FILES` に送られたパラメータ情報を取りまとめ、1つの連想配列としてまとめま、オブジェクト内に保持します。
 	 * 
@@ -84,29 +88,35 @@ class request{
 		if (!strlen($this->request_file_path)) {
 			$this->request_file_path = '/';
 		}
+		$this->user_agent = $this->conf->server['HTTP_USER_AGENT'];
 
 		if( !array_key_exists( 'REMOTE_ADDR' , $this->conf->server ) ){
 			//  コマンドラインからの実行か否か判断
 			$this->flg_cmd = true;//コマンドラインから実行しているかフラグ
-			if( preg_match( '/^\//', $this->conf->server['argv'][count($this->conf->server['argv'])-1] ) ){
-				$path = array_pop( $this->conf->server['argv'] );
-				$path = parse_url($path);
-				$this->request_file_path = $path['path'];
-				parse_str( $path['query'], $query );
-				$this->conf->get = array_merge( $this->conf->get, $query );
-			}
 			if( is_array( $this->conf->server['argv'] ) && count( $this->conf->server['argv'] ) ){
-				foreach( $this->conf->server['argv'] as $argv_line ){
-					foreach( explode( '&' , $argv_line ) as $argv_unit ){
-						preg_match( '/^(.*?)=(.*)$/ism' , $argv_unit , $argv_preg_result );
-						if( array_key_exists( 1 , $argv_preg_result ) && strlen( $argv_preg_result[1] ) ){
-							$this->conf->get[urldecode($argv_preg_result[1])] = urldecode($argv_preg_result[2]);
-						}else{
-							$this->conf->get[$argv_unit] = '';
+				$tmp_path = null;
+				for( $i = 0; count( $this->conf->server['argv'] ) > $i; $i ++ ){
+					if( preg_match( '/^\-/', $this->conf->server['argv'][$i] ) ){
+						switch( $this->conf->server['argv'][$i] ){
+							case '-a':
+							case '--user-agent':
+								$i ++;
+								$this->user_agent = trim($this->conf->server['argv'][$i]);
+								break;
 						}
+						$tmp_path = null;
+					}elseif( count( $this->conf->server['argv'] ) == $i+1 ){
+						$tmp_path = $this->conf->server['argv'][$i];
 					}
 				}
-				unset( $argv_line , $argv_preg_result );
+				if( preg_match( '/^\//', $tmp_path ) ){
+					$tmp_path = array_pop( $this->conf->server['argv'] );
+					$tmp_path = parse_url($tmp_path);
+					$this->request_file_path = $tmp_path['path'];
+					parse_str( $tmp_path['query'], $query );
+					$this->conf->get = array_merge( $this->conf->get, $query );
+				}
+				unset( $tmp_path );
 			}
 		}
 
@@ -347,6 +357,7 @@ class request{
 	 * @return mixed `$key` に対応するセッション値
 	 */
 	public function get_session( $key ){
+		if( !is_array( $_SESSION ) ){ return null; }
 		if( !array_key_exists($key, $_SESSION) ){ return null; }
 		return $_SESSION[$key];
 	}//get_session()
@@ -453,6 +464,15 @@ class request{
 
 
 	// ----- utils -----
+
+	/**
+	 * USER_AGENT を取得する。
+	 *
+	 * @return string USER_AGENT
+	 */
+	public function get_user_agent(){
+		return $this->user_agent;
+	}//get_user_agent()
 
 	/**
 	 * リクエストパスを取得する。
