@@ -37,7 +37,10 @@ class request{
 	 * リクエストファイルパス
 	 */
 	private $request_file_path;
-
+	/**
+	 * 優先ディレクトリインデックス
+	 */
+	private $directory_index_primary;
 
 	/**
 	 * コンストラクタ
@@ -61,11 +64,23 @@ class request{
 		if(!@is_array($this->conf->server)){
 			$this->conf->server = $_SERVER;
 		}
+		if( !array_key_exists( 'PATH_INFO' , $this->conf->server ) ){
+			$this->conf->server['PATH_INFO'] = null;
+		}
+		if( !array_key_exists( 'HTTP_USER_AGENT' , $this->conf->server ) ){
+			$this->conf->server['HTTP_USER_AGENT'] = null;
+		}
+		if( !array_key_exists( 'argv' , $this->conf->server ) ){
+			$this->conf->server['argv'] = null;
+		}
 		if(!@strlen($this->conf->session_name)){
 			$this->conf->session_name = 'SESSID';
 		}
 		if(!@strlen($this->conf->session_expire)){
 			$this->conf->session_expire = 1800;
+		}
+		if(!@strlen($this->conf->directory_index_primary)){
+			$this->conf->directory_index_primary = 'index.html';
 		}
 
 		$this->parse_input();
@@ -85,10 +100,10 @@ class request{
 	 */
 	private function parse_input(){
 		$this->request_file_path = $this->conf->server['PATH_INFO'];
-		if (!strlen($this->request_file_path)) {
+		if( !strlen($this->request_file_path) ){
 			$this->request_file_path = '/';
 		}
-		$this->user_agent = $this->conf->server['HTTP_USER_AGENT'];
+		$this->user_agent = @$this->conf->server['HTTP_USER_AGENT'];
 
 		if( !array_key_exists( 'REMOTE_ADDR' , $this->conf->server ) ){
 			//  コマンドラインからの実行か否か判断
@@ -149,7 +164,7 @@ class request{
 		unset($param);
 
 		if (preg_match('/\/$/', $this->request_file_path)) {
-			$this->request_file_path .= 'index.html';
+			$this->request_file_path .= $this->conf->directory_index_primary;
 		}
 
 		return	true;
