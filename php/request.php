@@ -260,6 +260,11 @@ class request{
 	 * @return string 指定されたオプション値
 	 */
 	public function get_cli_param( $idx = 0 ){
+		if($idx < 0){
+			// マイナスのインデックスが与えられた場合、
+			// 配列の最後から数える
+			$idx = count($this->cli_params)+$idx;
+		}
 		return @$this->cli_params[$idx];
 	}
 

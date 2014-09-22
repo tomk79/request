@@ -58,6 +58,11 @@ class requestTest extends PHPUnit_Framework_TestCase{
 		$this->assertEquals( $req->get_cli_param(0), 'param 1' );
 		$this->assertEquals( $req->get_cli_param(1), 'param 2' );
 		$this->assertEquals( $req->get_cli_param(2), 'param 3' );
+		$this->assertEquals( $req->get_cli_param(-1), 'param 3' );
+		$this->assertEquals( $req->get_cli_param(-2), 'param 2' );
+		$this->assertEquals( $req->get_cli_param(-3), 'param 1' );
+		$this->assertNull( $req->get_cli_param(3) );
+		$this->assertNull( $req->get_cli_param(-4) );
 		$this->assertEquals( $req->get_cli_option('-a'), 'TEST (-a)' );
 		$this->assertEquals( $req->get_cli_option('-b'), 'TEST (-b)' );
 		$this->assertEquals( count($req->get_cli_options()), 2 );
