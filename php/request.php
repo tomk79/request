@@ -22,14 +22,6 @@ class request{
 	 */
 	private $param = array();
 	/**
-	 * USER_AGENT
-	 */
-	private $user_agent;
-	/**
-	 * ダイナミックパスパラメータ
-	 */
-	private $dynamic_path_param = array();
-	/**
 	 * コマンドからのアクセス フラグ
 	 */
 	private $flg_cmd = false;
@@ -41,6 +33,14 @@ class request{
 	 * 優先ディレクトリインデックス
 	 */
 	private $directory_index_primary;
+	/**
+	 * コマンドラインオプション
+	 */
+	private $cli_options;
+	/**
+	 * コマンドラインパラメータ
+	 */
+	private $cli_params;
 
 	/**
 	 * コンストラクタ
@@ -103,7 +103,8 @@ class request{
 		if( !strlen($this->request_file_path) ){
 			$this->request_file_path = '/';
 		}
-		$this->user_agent = @$this->conf->server['HTTP_USER_AGENT'];
+		$this->cli_params = array();
+		$this->cli_options = array();
 
 		if( !array_key_exists( 'REMOTE_ADDR' , $this->conf->server ) ){
 			//  コマンドラインからの実行か否か判断
@@ -112,18 +113,14 @@ class request{
 				$tmp_path = null;
 				for( $i = 0; count( $this->conf->server['argv'] ) > $i; $i ++ ){
 					if( preg_match( '/^\-/', $this->conf->server['argv'][$i] ) ){
-						switch( $this->conf->server['argv'][$i] ){
-							case '-a':
-							case '--user-agent':
-								$i ++;
-								$this->user_agent = trim($this->conf->server['argv'][$i]);
-								break;
-						}
-						$tmp_path = null;
-					}elseif( count( $this->conf->server['argv'] ) == $i+1 ){
-						$tmp_path = $this->conf->server['argv'][$i];
+						$this->cli_params = array();//オプションの前に引数は付けられない
+						$this->cli_options[$this->conf->server['argv'][$i]] = $this->conf->server['argv'][$i+1];
+						$i ++;
+					}else{
+						array_push( $this->cli_params, $this->conf->server['argv'][$i] );
 					}
 				}
+				$tmp_path = @$this->cli_params[count($this->cli_params)-1];
 				if( preg_match( '/^\//', $tmp_path ) ){
 					$tmp_path = array_pop( $this->conf->server['argv'] );
 					$tmp_path = parse_url($tmp_path);
@@ -179,25 +176,24 @@ class request{
 	private function normalize_input( $param ){
 		$is_callable_mb_check_encoding = is_callable( 'mb_check_encoding' );
 		foreach( $param as $key=>$val ){
-			#	URLパラメータを加工
+			// URLパラメータを加工
 			if( is_array( $val ) ){
-				#	配列なら
+				// 配列なら
 				$param[$key] = $this->normalize_input( $param[$key] );
 			}elseif( is_string( $param[$key] ) ){
-				#	文字列なら
+				// 文字列なら
 				$param[$key] = mb_convert_kana( $param[$key] , 'KV' , mb_internal_encoding() );
-					//半角カナは全角に統一
+					// 半角カナは全角に統一
 				$param[$key] = preg_replace( '/\r\n|\r|\n/' , "\n" , $param[$key] );
-					//改行コードはLFに統一
+					// 改行コードはLFに統一
 				if( $is_callable_mb_check_encoding ){
-					#	PxFW 0.6.6 : 追加
-					#	不正なバイトコードのチェック
+					// 不正なバイトコードのチェック
 					if( !mb_check_encoding( $key , mb_internal_encoding() ) ){
-						#	キーの中に見つけたらパラメータごと削除
+						// キーの中に見つけたらパラメータごと削除
 						unset( $param[$key] );
 					}
 					if( !mb_check_encoding( $param[$key] , mb_internal_encoding() ) ){
-						#	値の中に見つけたら false に置き換える
+						// 値の中に見つけたら false に置き換える
 						$param[$key] = false;
 					}
 				}
@@ -205,18 +201,6 @@ class request{
 		}
 		return $param;
 	}//normalize_input()
-
-	/**
-	 * ダイナミックパスからのパラメータをセットする。
-	 * 
-	 * @param string $key ダイナミックパスパラメータ名
-	 * @param string $val ダイナミックパスパラメータ値
-	 * @return bool 常に `true`
-	 */
-	public function set_path_param( $key , $val ){
-		$this->dynamic_path_param[$key] = $val;
-		return true;
-	}//set_path_param()
 
 	/**
 	 * パラメータを取得する。
@@ -252,6 +236,42 @@ class request{
 	public function get_all_params(){
 		return $this->param;
 	}
+
+	/**
+	 * コマンドラインオプションを取得する
+	 * @param string $name オプション名
+	 * @return string 指定されたオプション値
+	 */
+	public function get_cli_option( $name ){
+		return @$this->cli_options[$name];
+	}
+
+	/**
+	 * すべてのコマンドラインオプションを連想配列で取得する
+	 * @return array すべてのコマンドラインオプション
+	 */
+	public function get_cli_options(){
+		return @$this->cli_options;
+	}
+
+	/**
+	 * コマンドラインパラメータを取得する
+	 * @param string $idx パラメータ番号
+	 * @return string 指定されたオプション値
+	 */
+	public function get_cli_param( $idx = 0 ){
+		return @$this->cli_params[$idx];
+	}
+
+	/**
+	 * すべてのコマンドラインパラメータを配列で取得する
+	 * @return array すべてのコマンドラインパラメータ
+	 */
+	public function get_cli_params(){
+		return @$this->cli_params;
+	}
+
+
 
 	// ----- cookies -----
 
@@ -304,6 +324,8 @@ class request{
 		unset( $_COOKIE[$key] );
 		return true;
 	}//delete_cookie()
+
+
 
 	// ----- session -----
 
@@ -486,7 +508,7 @@ class request{
 	 * @return string USER_AGENT
 	 */
 	public function get_user_agent(){
-		return $this->user_agent;
+		return @$this->conf->server['HTTP_USER_AGENT'];
 	}//get_user_agent()
 
 	/**

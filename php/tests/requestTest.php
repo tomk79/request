@@ -46,6 +46,43 @@ class requestTest extends PHPUnit_Framework_TestCase{
 			'php',
 			'request.php',
 			'-a',
+			'TEST (-a)',
+			'-b',
+			'TEST (-b)',
+			'param 1',
+			'param 2',
+			'param 3',
+		);
+		$req = new tomk79\request( $conf );
+		$this->assertTrue( $req->is_cmd() );
+		$this->assertEquals( $req->get_cli_param(0), 'param 1' );
+		$this->assertEquals( $req->get_cli_param(1), 'param 2' );
+		$this->assertEquals( $req->get_cli_param(2), 'param 3' );
+		$this->assertEquals( $req->get_cli_option('-a'), 'TEST (-a)' );
+		$this->assertEquals( $req->get_cli_option('-b'), 'TEST (-b)' );
+		$this->assertEquals( count($req->get_cli_options()), 2 );
+		$this->assertEquals( $req->get_request_file_path(), '/index.html' );
+
+	}
+
+	/**
+	 * コマンドラインからウェブっぽいオプションをつけてみるテスト
+	 */
+	public function testCommandLineOptionsAsWeb(){
+		$conf = json_decode('{}');
+		$conf->server = $_SERVER;
+		$conf->get = array(
+			'get1'=>'get_val_1',
+			'get2'=>'get_val_2',
+		);
+		$conf->post = array(
+			'post1'=>'post_val_1',
+			'post2'=>'post_val_2',
+		);
+		$conf->server['argv'] = array(
+			'php',
+			'request.php',
+			'-a',
 			'TEST AGENT 1.0',
 			'/?test1=123&test2='.urlencode('あいうえお'),
 		);
@@ -55,7 +92,9 @@ class requestTest extends PHPUnit_Framework_TestCase{
 		$this->assertEquals( $req->get_param('test2'), 'あいうえお' );
 		$this->assertEquals( $req->get_param('get2'), 'get_val_2' );
 		$this->assertEquals( $req->get_param('post2'), 'post_val_2' );
-		$this->assertEquals( $req->get_user_agent(), 'TEST AGENT 1.0' );
+		$this->assertEquals( $req->get_cli_param(), '/?test1=123&test2='.urlencode('あいうえお') );
+		$this->assertEquals( $req->get_cli_option('-a'), 'TEST AGENT 1.0' );
+		$this->assertNull( $req->get_user_agent() );//コマンドラインではセットされない
 		$this->assertEquals( $req->get_request_file_path(), '/index.html' );
 
 	}
