@@ -121,12 +121,14 @@ class request{
 					}
 				}
 				$tmp_path = @$this->cli_params[count($this->cli_params)-1];
-				if( preg_match( '/^\//', $tmp_path ) ){
+				if( preg_match( '/^\//', $tmp_path ) && @is_array($this->conf->server['argv']) ){
 					$tmp_path = array_pop( $this->conf->server['argv'] );
 					$tmp_path = parse_url($tmp_path);
 					$this->request_file_path = $tmp_path['path'];
-					parse_str( $tmp_path['query'], $query );
-					$this->conf->get = array_merge( $this->conf->get, $query );
+					@parse_str( $tmp_path['query'], $query );
+					if( is_array($query) ){
+						$this->conf->get = array_merge( $this->conf->get, $query );
+					}
 				}
 				unset( $tmp_path );
 			}
@@ -399,8 +401,8 @@ class request{
 	 * @return mixed `$key` に対応するセッション値
 	 */
 	public function get_session( $key ){
-		if( !is_array( $_SESSION ) ){ return null; }
-		if( !array_key_exists($key, $_SESSION) ){ return null; }
+		if( @!is_array( $_SESSION ) ){ return null; }
+		if( @!array_key_exists($key, $_SESSION) ){ return null; }
 		return $_SESSION[$key];
 	}//get_session()
 

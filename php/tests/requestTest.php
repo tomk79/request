@@ -104,4 +104,29 @@ class requestTest extends PHPUnit_Framework_TestCase{
 
 	}
 
+
+	/**
+	 * paramless uri param
+	 */
+	public function testCommandLineOptionsAsWeb_paramless_uri_param(){
+		$conf = new stdClass;
+		$conf->server = $_SERVER;
+		$conf->server['argv'] = array(
+			'php',
+			'request.php',
+			'/',
+		);
+		$req = new tomk79\request( $conf );
+		$this->assertTrue( $req->is_cmd() );
+		$this->assertNull( $req->get_param('test1') );
+		$this->assertNull( $req->get_param('test2') );
+		$this->assertNull( $req->get_param('get2') );
+		$this->assertNull( $req->get_param('post2') );
+		$this->assertEquals( $req->get_cli_param(-1), '/' );
+		$this->assertNull( $req->get_cli_option('-a') );
+		$this->assertNull( $req->get_user_agent() );//コマンドラインではセットされない
+		$this->assertEquals( $req->get_request_file_path(), '/index.html' );
+
+	}
+
 }
