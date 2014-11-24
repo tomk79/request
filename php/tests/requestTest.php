@@ -129,4 +129,35 @@ class requestTest extends PHPUnit_Framework_TestCase{
 
 	}
 
+	/**
+	 * directory traversal 対策
+	 */
+	public function testDirectoryTraversal(){
+		$conf = new stdClass;
+		$conf->server = $_SERVER;
+		$conf->server['argv'] = array(
+			'/aaa/bbb/../',
+		);
+		$req = new tomk79\request( $conf );
+		$this->assertTrue( $req->is_cmd() );
+		$this->assertEquals( $req->get_request_file_path(), '/aaa/index.html' );
+
+		$conf = new stdClass;
+		$conf->server = $_SERVER;
+		$conf->server['argv'] = array(
+			'/../../',
+		);
+		$req = new tomk79\request( $conf );
+		$this->assertEquals( $req->get_request_file_path(), '/index.html' );
+
+		$conf = new stdClass;
+		$conf->server = $_SERVER;
+		$conf->server['argv'] = array(
+			'/test2/../../test.html',
+		);
+		$req = new tomk79\request( $conf );
+		$this->assertEquals( $req->get_request_file_path(), '/test.html' );
+
+	}
+
 }

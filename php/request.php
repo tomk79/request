@@ -18,6 +18,10 @@ class request{
 	 */
 	private $conf;
 	/**
+	 * ファイルシステムオブジェクト
+	 */
+	private $fs;
+	/**
 	 * URLパラメータ
 	 */
 	private $param = array();
@@ -52,6 +56,8 @@ class request{
 		if( !is_object($this->conf) ){
 			$this->conf = json_decode('{}');
 		}
+		$this->fs = new \tomk79\filesystem();
+
 		if(!@is_array($this->conf->get)){
 			$this->conf->get = $_GET;
 		}
@@ -165,6 +171,7 @@ class request{
 		if (preg_match('/\/$/', $this->request_file_path)) {
 			$this->request_file_path .= $this->conf->directory_index_primary;
 		}
+		$this->request_file_path = $this->fs->get_realpath( $this->request_file_path );
 
 		return	true;
 	}//parse_input()
