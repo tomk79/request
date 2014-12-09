@@ -172,6 +172,7 @@ class request{
 			$this->request_file_path .= $this->conf->directory_index_primary;
 		}
 		$this->request_file_path = $this->fs->get_realpath( $this->request_file_path );
+		$this->request_file_path = $this->fs->normalize_path( $this->request_file_path );
 
 		return	true;
 	}//parse_input()
