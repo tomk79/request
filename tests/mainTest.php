@@ -163,19 +163,11 @@ class requestTest extends PHPUnit_Framework_TestCase{
 			'php',
 			__DIR__.'/testscripts/commandline.php',
 			'test01/',
-			'(*&\'"\\)',
+			'/!~`@?:;.,#-_=+(*&\'\\)[]{}<> 	|^{$a}abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
 		) );
 		// var_dump($output);
-		$this->assertEquals( $output, 'test01/--(*&\'"\\)' );
-
-		$output = $this->passthru( array(
-			'php',
-			__DIR__.'/testscripts/commandline.php',
-			'test01/',
-			'('."\r".'*&\'"\\'."\n".')',
-		) );
-		// var_dump($output);
-		$this->assertEquals( $output, 'test01/--('."\r".'*&\'"\\'."\n".')' );
+		// Windowsでは、 % と " は利用できない。
+		$this->assertEquals( $output, 'test01/--/!~`@?:;.,#-_=+(*&\'\\)[]{}<> 	|^{$a}abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' );
 
 	}
 
@@ -187,10 +179,10 @@ class requestTest extends PHPUnit_Framework_TestCase{
 	private function passthru( $ary_command ){
 		$cmd = array();
 		foreach( $ary_command as $row ){
-			$param = '"'.addcslashes($row, "\"\\").'"';
+			$param = escapeshellarg($row);
 			array_push( $cmd, $param );
 		}
-		$cmd = implode( ' ', $cmd );
+		$cmd = escapeshellcmd(implode( ' ', $cmd ));
 		// var_dump($cmd);
 		ob_start();
 		passthru( $cmd );
