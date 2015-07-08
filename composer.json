@@ -9,6 +9,11 @@
             "email": "tomk79@gmail.com"
         }
     ],
+    "scripts":{
+        "test": [
+            "php ./vendor/phpunit/phpunit/phpunit"
+        ]
+    } ,
     "require": {
         "php": ">=5.3.0",
         "tomk79/filesystem": "1.*"

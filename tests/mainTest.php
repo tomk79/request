@@ -1,12 +1,7 @@
 <?php
 /**
  * test for tomk79\request
- * 
- * $ cd (project dir)
- * $ ./vendor/phpunit/phpunit/phpunit php/tests/requestTest
  */
-require_once( __DIR__.'/../request.php' );
-
 class requestTest extends PHPUnit_Framework_TestCase{
 
 	private $req;
@@ -158,6 +153,49 @@ class requestTest extends PHPUnit_Framework_TestCase{
 		$req = new tomk79\request( $conf );
 		$this->assertEquals( $req->get_request_file_path(), '/test.html' );
 
+	}
+
+	/**
+	 * コマンドラインパラメータのテスト
+	 */
+	public function testCommandLineParams(){
+		$output = $this->passthru( array(
+			'php',
+			__DIR__.'/testscripts/commandline.php',
+			'test01/',
+			'(*&\'"\\)',
+		) );
+		// var_dump($output);
+		$this->assertEquals( $output, 'test01/--(*&\'"\\)' );
+
+		$output = $this->passthru( array(
+			'php',
+			__DIR__.'/testscripts/commandline.php',
+			'test01/',
+			'('."\r".'*&\'"\\'."\n".')',
+		) );
+		// var_dump($output);
+		$this->assertEquals( $output, 'test01/--('."\r".'*&\'"\\'."\n".')' );
+
+	}
+
+	/**
+	 * コマンドを実行し、標準出力値を返す
+	 * @param array $ary_command コマンドのパラメータを要素として持つ配列
+	 * @return string コマンドの標準出力値
+	 */
+	private function passthru( $ary_command ){
+		$cmd = array();
+		foreach( $ary_command as $row ){
+			$param = '"'.addcslashes($row, "\"\\").'"';
+			array_push( $cmd, $param );
+		}
+		$cmd = implode( ' ', $cmd );
+		// var_dump($cmd);
+		ob_start();
+		passthru( $cmd );
+		$bin = ob_get_clean();
+		return $bin;
 	}
 
 }
