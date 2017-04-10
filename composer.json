@@ -1,6 +1,6 @@
 {
     "name": "tomk79/request",
-    "description": "",
+    "description": "A request management utilitiy for PHP.",
     "keywords": [],
     "license": "MIT",
     "authors": [

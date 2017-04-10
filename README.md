@@ -1,6 +1,8 @@
 tomk79/request
 =======
 
+A request management utilitiy for PHP.
+
 ## Usage
 
 Define `tomk79/request` in your `composer.json`.
@@ -71,9 +73,30 @@ $ composer run-script documentation
 
 ## Change log
 
-### tomk79/request@1.0.0 (2017/??/??)
+### tomk79/request@1.0.0 (2017/04/11)
 
 - 初期化オプションに `cookie_default_path` を追加。
+
+### tomk79/request@0.1.4 (2015/03/19)
+
+- Noticeレベルのエラー修正
+
+### tomk79/request@0.1.3 (2014/12/09)
+
+- `$req->get_request_file_path()` の戻り値をスラッシュで正規化するようになった。
+
+### tomk79/request@0.1.2 (2014/11/24)
+
+- `$req->get_request_file_path()` でのディレクトリトラバーサル対策処理を追加。
+
+### tomk79/request@0.1.1 (2014/10/21)
+
+- Bug fix on Windows
+
+### tomk79/request@0.1.0 (2014/09/22)
+
+- Initial Release.
+
 
 ## License
 
