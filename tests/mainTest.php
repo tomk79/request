@@ -2,7 +2,7 @@
 /**
  * test for tomk79\request
  */
-class requestTest extends PHPUnit_Framework_TestCase{
+class mainTest extends PHPUnit_Framework_TestCase{
 
 	private $req;
 
@@ -182,7 +182,7 @@ class requestTest extends PHPUnit_Framework_TestCase{
 			$param = escapeshellarg($row);
 			array_push( $cmd, $param );
 		}
-		$cmd = escapeshellcmd(implode( ' ', $cmd ));
+		$cmd = implode( ' ', $cmd );
 		// var_dump($cmd);
 		ob_start();
 		passthru( $cmd );
