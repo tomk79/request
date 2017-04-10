@@ -1,7 +1,7 @@
 <?php
 /**
  * tomk79/request
- * 
+ *
  * @author Tomoya Koyanagi <tomk79@gmail.com>
  */
 
@@ -9,7 +9,7 @@ namespace tomk79;
 
 /**
  * tomk79/request core class
- * 
+ *
  * @author Tomoya Koyanagi <tomk79@gmail.com>
  */
 class request{
@@ -48,7 +48,7 @@ class request{
 
 	/**
 	 * コンストラクタ
-	 * 
+	 *
 	 * @param object $conf 設定オブジェクト
 	 */
 	public function __construct($conf=null){
@@ -88,6 +88,11 @@ class request{
 		if(!@strlen($this->conf->directory_index_primary)){
 			$this->conf->directory_index_primary = 'index.html';
 		}
+		if(!@strlen($this->conf->cookie_default_path)){
+			// クッキーのデフォルトのパス
+			// session の範囲もこの設定に従う。
+			$this->conf->cookie_default_path = $this->get_path_current_dir();
+		}
 
 		$this->parse_input();
 		$this->session_start();
@@ -95,13 +100,13 @@ class request{
 
 	/**
 	 *	入力値を解析する。
-	 * 
+	 *
 	 * `$_GET`, `$_POST`, `$_FILES` に送られたパラメータ情報を取りまとめ、1つの連想配列としてまとめま、オブジェクト内に保持します。
-	 * 
+	 *
 	 * コマンドラインから実行された場合は、コマンドラインオプションをそれぞれ `=` 記号で区切り、URLパラメータ同様にパースします。
-	 * 
+	 *
 	 * このメソッドの処理には、入力文字コードの変換(UTF-8へ統一)などの整形処理が含まれます。
-	 * 
+	 *
 	 * @return bool 常に `true`
 	 */
 	private function parse_input(){
@@ -179,7 +184,7 @@ class request{
 
 	/**
 	 *	入力値に対する標準的な変換処理
-	 * 
+	 *
 	 * @param array $param パラメータ
 	 * @return array 変換後のパラメータ
 	 */
@@ -214,10 +219,10 @@ class request{
 
 	/**
 	 * パラメータを取得する。
-	 * 
+	 *
 	 * `$_GET`, `$_POST`、`$_FILES` を合わせた連想配列の中から `$key` に当たる値を引いて返します。
 	 * キーが定義されていない場合は、`null` を返します。
-	 * 
+	 *
 	 * @param string $key URLパラメータ名
 	 * @return mixed URLパラメータ値
 	 */
@@ -228,7 +233,7 @@ class request{
 
 	/**
 	 * パラメータをセットする。
-	 * 
+	 *
 	 * @param string $key パラメータ名
 	 * @param mixed $val パラメータ値
 	 * @return bool 常に `true`
@@ -292,7 +297,7 @@ class request{
 
 	/**
 	 * クッキー情報を取得する。
-	 * 
+	 *
 	 * @param string $key クッキー名
 	 * @return mixed クッキーの値
 	 */
@@ -302,7 +307,7 @@ class request{
 
 	/**
 	 * クッキー情報をセットする。
-	 * 
+	 *
 	 * @param string $key クッキー名
 	 * @param string $val クッキー値
 	 * @param string $expire クッキーの有効期限
@@ -313,7 +318,10 @@ class request{
 	 */
 	public function set_cookie( $key , $val , $expire = null , $path = null , $domain = null , $secure = false ){
 		if( is_null( $path ) ){
-			$path = $this->get_path_current_dir();
+			$path = $this->conf->cookie_default_path;
+			if( !strlen( $path ) ){
+				$path = $this->get_path_current_dir();
+			}
 			if( !strlen( $path ) ){
 				$path = '/';
 			}
@@ -328,7 +336,7 @@ class request{
 
 	/**
 	 * クッキー情報を削除する。
-	 * 
+	 *
 	 * @param string $key クッキー名
 	 * @return bool 成功時 `true`、失敗時 `false` を返します。
 	 */
@@ -346,7 +354,7 @@ class request{
 
 	/**
 	 * セッションを開始する。
-	 * 
+	 *
 	 * @param string $sid セッションID。省略時、自動発行。
 	 * @return bool セッションが正常に開始した場合に `true`、それ以外の場合に `false` を返します。
 	 */
@@ -357,7 +365,13 @@ class request{
 		if( strlen( $this->conf->session_name ) ){
 			$session_name = $this->conf->session_name;
 		}
-		$path = $this->get_path_current_dir();
+		$path = $this->conf->cookie_default_path;
+		if( !strlen( $path ) ){
+			$path = $this->get_path_current_dir();
+		}
+		if( !strlen( $path ) ){
+			$path = '/';
+		}
 
 		session_name( $session_name );
 		session_cache_limiter( $cache_limiter );
@@ -489,7 +503,7 @@ class request{
 	}
 	/**
 	 * セッションに保存されたファイル情報の一覧を取得する。
-	 * 
+	 *
 	 * @return array ファイル情報 を格納した連想配列
 	 */
 	public function get_uploadfile_list(){
@@ -507,7 +521,7 @@ class request{
 	}
 	/**
 	 * セッションに保存されたファイルを全て削除する。
-	 * 
+	 *
 	 * @return bool 常に `true` を返します。
 	 */
 	public function delete_uploadfile_all(){
@@ -537,7 +551,7 @@ class request{
 
 	/**
 	 *  SSL通信か調べる
-	 * 
+	 *
 	 * @return bool SSL通信の場合 `true`、それ以外の場合 `false` を返します。
 	 */
 	public function is_ssl(){
@@ -550,7 +564,7 @@ class request{
 
 	/**
 	 * コマンドラインによる実行か確認する。
-	 * 
+	 *
 	 * @return bool コマンドからの実行の場合 `true`、ウェブからの実行の場合 `false` を返します。
 	 */
 	public function is_cmd(){
@@ -565,7 +579,7 @@ class request{
 
 	/**
 	 * 受け取ったテキストを、指定の文字セットに変換する。
-	 * 
+	 *
 	 * @param mixed $text テキスト
 	 * @param string $encode 変換後の文字セット。省略時、`mb_internal_encoding()` から取得
 	 * @param string $encodefrom 変換前の文字セット。省略時、自動検出
@@ -600,7 +614,7 @@ class request{
 	 *
 	 * この関数は、PHPの `stripslashes()` のラッパーです。
 	 * 配列を受け取ると再帰的に文字列を変換して返します。
-	 * 
+	 *
 	 * @param mixed $text テキスト
 	 * @return string クォートが元に戻されたテキスト
 	 */

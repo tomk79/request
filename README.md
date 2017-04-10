@@ -45,7 +45,8 @@ require_once('./vendor/autoload.php');
 $req = new tomk79\request(array(
   'session_name'=>'SESSID',
   'session_expire'=>1800,
-  'directory_index_primary'=>'index.html'
+  'directory_index_primary'=>'index.html',
+  'cookie_default_path'=>'/'
 ));
 ```
 
@@ -67,6 +68,12 @@ $ php ./vendor/phpunit/phpunit/phpunit
 $ composer run-script documentation
 ```
 
+
+## Change log
+
+### tomk79/request@1.0.0 (2017/??/??)
+
+- 初期化オプションに `cookie_default_path` を追加。
 
 ## License
 
