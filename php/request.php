@@ -373,18 +373,18 @@ class request{
 			$path = '/';
 		}
 
-		session_name( $session_name );
-		session_cache_limiter( $cache_limiter );
-		session_cache_expire( intval($expire/60) );
+		@session_name( $session_name );
+		@session_cache_limiter( $cache_limiter );
+		@session_cache_expire( intval($expire/60) );
 
 		if( intval( ini_get( 'session.gc_maxlifetime' ) ) < $expire + 10 ){
 			// ガベージコレクションの生存期間が
 			// $expireよりも短い場合は、上書きする。
 			// バッファは固定値で10秒。
-			ini_set( 'session.gc_maxlifetime' , $expire + 10 );
+			@ini_set( 'session.gc_maxlifetime' , $expire + 10 );
 		}
 
-		session_set_cookie_params( 0 , $path );
+		@session_set_cookie_params( 0 , $path );
 			//  セッションクッキー自体の寿命は定めない(=0)
 			//  そのかわり、SESSION_LAST_MODIFIED を新設し、自分で寿命を管理する。
 
