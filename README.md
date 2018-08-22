@@ -73,7 +73,7 @@ $ composer run-script documentation
 
 ## Change log
 
-### tomk79/request@1.0.2 (リリース日未定)
+### tomk79/request@1.0.2 (2018/8/22)
 
 - 細かい不具合の修正。
 
