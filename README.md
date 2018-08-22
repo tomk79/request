@@ -73,6 +73,10 @@ $ composer run-script documentation
 
 ## Change log
 
+### tomk79/request@1.0.2 (リリース日未定)
+
+- 細かい不具合の修正。
+
 ### tomk79/request@1.0.1 (2018/2/9)
 
 - PHP 7.2 で、CLIで `session_start()` を実行した際に Warning が発生する問題を修正。

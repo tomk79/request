@@ -58,16 +58,16 @@ class request{
 		}
 		$this->fs = new \tomk79\filesystem();
 
-		if(!@is_array($this->conf->get)){
+		if(!property_exists($this->conf, 'get') || !@is_array($this->conf->get)){
 			$this->conf->get = $_GET;
 		}
-		if(!@is_array($this->conf->post)){
+		if(!property_exists($this->conf, 'post') || !@is_array($this->conf->post)){
 			$this->conf->post = $_POST;
 		}
-		if(!@is_array($this->conf->files)){
+		if(!property_exists($this->conf, 'files') || !@is_array($this->conf->files)){
 			$this->conf->files = $_FILES;
 		}
-		if(!@is_array($this->conf->server)){
+		if(!property_exists($this->conf, 'server') || !@is_array($this->conf->server)){
 			$this->conf->server = $_SERVER;
 		}
 		if( !array_key_exists( 'PATH_INFO' , $this->conf->server ) ){
@@ -79,16 +79,16 @@ class request{
 		if( !array_key_exists( 'argv' , $this->conf->server ) ){
 			$this->conf->server['argv'] = null;
 		}
-		if(!@strlen($this->conf->session_name)){
+		if(!property_exists($this->conf, 'session_name') || !@strlen($this->conf->session_name)){
 			$this->conf->session_name = 'SESSID';
 		}
-		if(!@strlen($this->conf->session_expire)){
+		if(!property_exists($this->conf, 'session_expire') || !@strlen($this->conf->session_expire)){
 			$this->conf->session_expire = 1800;
 		}
-		if(!@strlen($this->conf->directory_index_primary)){
+		if(!property_exists($this->conf, 'directory_index_primary') || !@strlen($this->conf->directory_index_primary)){
 			$this->conf->directory_index_primary = 'index.html';
 		}
-		if(!@strlen($this->conf->cookie_default_path)){
+		if(!property_exists($this->conf, 'cookie_default_path') || !@strlen($this->conf->cookie_default_path)){
 			// クッキーのデフォルトのパス
 			// session の範囲もこの設定に従う。
 			$this->conf->cookie_default_path = $this->get_path_current_dir();
@@ -258,6 +258,9 @@ class request{
 	 * @return string 指定されたオプション値
 	 */
 	public function get_cli_option( $name ){
+		if( !array_key_exists($name, $this->cli_options) ){
+			return null;
+		}
 		return @$this->cli_options[$name];
 	}
 
@@ -302,6 +305,8 @@ class request{
 	 * @return mixed クッキーの値
 	 */
 	public function get_cookie( $key ){
+		if( @!is_array( $_COOKIE ) ){ return null; }
+		if( @!array_key_exists($key, $_COOKIE) ){ return null; }
 		return	@$_COOKIE[$key];
 	}//get_cookie()
 
@@ -483,6 +488,14 @@ class request{
 			}
 			$fileinfo['content'] = base64_encode( file_get_contents( $filepath ) );
 		}
+
+		if( @!is_array( $_SESSION ) ){
+			$_SESSION = array();
+		}
+		if( @!array_key_exists('FILE', $_SESSION) ){
+			$_SESSION['FILE'] = array();
+		}
+
 		$_SESSION['FILE'][$key] = $fileinfo;
 		return	true;
 	}
@@ -494,6 +507,15 @@ class request{
 	 */
 	public function get_uploadfile( $key ){
 		if(!strlen($key)){ return false; }
+		if( @!is_array( $_SESSION ) ){
+			return false;
+		}
+		if( @!array_key_exists('FILE', $_SESSION) ){
+			return false;
+		}
+		if( @!array_key_exists($key, $_SESSION['FILE']) ){
+			return false;
+		}
 
 		$rtn = @$_SESSION['FILE'][$key];
 		if( is_null( $rtn ) ){ return false; }
@@ -507,6 +529,9 @@ class request{
 	 * @return array ファイル情報 を格納した連想配列
 	 */
 	public function get_uploadfile_list(){
+		if( @!array_key_exists('FILE', $_SESSION) ){
+			return false;
+		}
 		return	array_keys( $_SESSION['FILE'] );
 	}
 	/**
@@ -516,6 +541,9 @@ class request{
 	 * @return bool 常に `true` を返します。
 	 */
 	public function delete_uploadfile( $key ){
+		if( @!array_key_exists('FILE', $_SESSION) ){
+			return true;
+		}
 		unset( $_SESSION['FILE'][$key] );
 		return	true;
 	}
