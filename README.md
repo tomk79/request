@@ -73,6 +73,10 @@ $ composer run-script documentation
 
 ## Change log
 
+### tomk79/request@1.1.0 (リリース日未定)
+
+- `$req->set_cookie()` の `$secure` フラグは、デフォルトが `true` に変更されました。
+
 ### tomk79/request@1.0.2 (2018/8/22)
 
 - 細かい不具合の修正。

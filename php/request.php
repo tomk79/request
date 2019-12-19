@@ -318,10 +318,10 @@ class request{
 	 * @param string $expire クッキーの有効期限
 	 * @param string $path サーバー上での、クッキーを有効としたいパス
 	 * @param string $domain クッキーが有効なドメイン
-	 * @param bool $secure クライアントからのセキュアな HTTPS 接続の場合にのみクッキーが送信されるようにします
+	 * @param bool $secure クライアントからのセキュアな HTTPS 接続の場合にのみクッキーが送信されるようにします。デフォルトは `true`
 	 * @return 成功時 `true`、失敗時 `false` を返します。
 	 */
-	public function set_cookie( $key , $val , $expire = null , $path = null , $domain = null , $secure = false ){
+	public function set_cookie( $key , $val , $expire = null , $path = null , $domain = null , $secure = true ){
 		if( is_null( $path ) ){
 			$path = $this->conf->cookie_default_path;
 			if( !strlen( $path ) ){
