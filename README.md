@@ -73,39 +73,39 @@ $ composer run-script documentation
 
 ## Change log
 
-### tomk79/request@1.1.0 (リリース日未定)
+### tomk79/request v1.1.0 (2020/6/21)
 
 - `$req->set_cookie()` の `$secure` フラグは、デフォルトが `true` に変更されました。
 
-### tomk79/request@1.0.2 (2018/8/22)
+### tomk79/request v1.0.2 (2018/8/22)
 
 - 細かい不具合の修正。
 
-### tomk79/request@1.0.1 (2018/2/9)
+### tomk79/request v1.0.1 (2018/2/9)
 
 - PHP 7.2 で、CLIで `session_start()` を実行した際に Warning が発生する問題を修正。
 
-### tomk79/request@1.0.0 (2017/04/11)
+### tomk79/request v1.0.0 (2017/04/11)
 
 - 初期化オプションに `cookie_default_path` を追加。
 
-### tomk79/request@0.1.4 (2015/03/19)
+### tomk79/request v0.1.4 (2015/03/19)
 
 - Noticeレベルのエラー修正
 
-### tomk79/request@0.1.3 (2014/12/09)
+### tomk79/request v0.1.3 (2014/12/09)
 
 - `$req->get_request_file_path()` の戻り値をスラッシュで正規化するようになった。
 
-### tomk79/request@0.1.2 (2014/11/24)
+### tomk79/request v0.1.2 (2014/11/24)
 
 - `$req->get_request_file_path()` でのディレクトリトラバーサル対策処理を追加。
 
-### tomk79/request@0.1.1 (2014/10/21)
+### tomk79/request v0.1.1 (2014/10/21)
 
 - Bug fix on Windows
 
-### tomk79/request@0.1.0 (2014/09/22)
+### tomk79/request v0.1.0 (2014/09/22)
 
 - Initial Release.
 
@@ -118,5 +118,5 @@ MIT License
 ## Author
 
 - (C)Tomoya Koyanagi <tomk79@gmail.com>
-- website: <http://www.pxt.jp/>
-- Twitter: @tomk79 <http://twitter.com/tomk79/>
+- website: <https://www.pxt.jp/>
+- Twitter: @tomk79 <https://twitter.com/tomk79/>

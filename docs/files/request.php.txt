@@ -1,7 +1,7 @@
 <?php
 /**
  * tomk79/request
- * 
+ *
  * @author Tomoya Koyanagi <tomk79@gmail.com>
  */
 
@@ -9,7 +9,7 @@ namespace tomk79;
 
 /**
  * tomk79/request core class
- * 
+ *
  * @author Tomoya Koyanagi <tomk79@gmail.com>
  */
 class request{
@@ -48,7 +48,7 @@ class request{
 
 	/**
 	 * コンストラクタ
-	 * 
+	 *
 	 * @param object $conf 設定オブジェクト
 	 */
 	public function __construct($conf=null){
@@ -58,16 +58,16 @@ class request{
 		}
 		$this->fs = new \tomk79\filesystem();
 
-		if(!@is_array($this->conf->get)){
+		if(!property_exists($this->conf, 'get') || !@is_array($this->conf->get)){
 			$this->conf->get = $_GET;
 		}
-		if(!@is_array($this->conf->post)){
+		if(!property_exists($this->conf, 'post') || !@is_array($this->conf->post)){
 			$this->conf->post = $_POST;
 		}
-		if(!@is_array($this->conf->files)){
+		if(!property_exists($this->conf, 'files') || !@is_array($this->conf->files)){
 			$this->conf->files = $_FILES;
 		}
-		if(!@is_array($this->conf->server)){
+		if(!property_exists($this->conf, 'server') || !@is_array($this->conf->server)){
 			$this->conf->server = $_SERVER;
 		}
 		if( !array_key_exists( 'PATH_INFO' , $this->conf->server ) ){
@@ -79,14 +79,19 @@ class request{
 		if( !array_key_exists( 'argv' , $this->conf->server ) ){
 			$this->conf->server['argv'] = null;
 		}
-		if(!@strlen($this->conf->session_name)){
+		if(!property_exists($this->conf, 'session_name') || !@strlen($this->conf->session_name)){
 			$this->conf->session_name = 'SESSID';
 		}
-		if(!@strlen($this->conf->session_expire)){
+		if(!property_exists($this->conf, 'session_expire') || !@strlen($this->conf->session_expire)){
 			$this->conf->session_expire = 1800;
 		}
-		if(!@strlen($this->conf->directory_index_primary)){
+		if(!property_exists($this->conf, 'directory_index_primary') || !@strlen($this->conf->directory_index_primary)){
 			$this->conf->directory_index_primary = 'index.html';
+		}
+		if(!property_exists($this->conf, 'cookie_default_path') || !@strlen($this->conf->cookie_default_path)){
+			// クッキーのデフォルトのパス
+			// session の範囲もこの設定に従う。
+			$this->conf->cookie_default_path = $this->get_path_current_dir();
 		}
 
 		$this->parse_input();
@@ -95,13 +100,13 @@ class request{
 
 	/**
 	 *	入力値を解析する。
-	 * 
+	 *
 	 * `$_GET`, `$_POST`, `$_FILES` に送られたパラメータ情報を取りまとめ、1つの連想配列としてまとめま、オブジェクト内に保持します。
-	 * 
+	 *
 	 * コマンドラインから実行された場合は、コマンドラインオプションをそれぞれ `=` 記号で区切り、URLパラメータ同様にパースします。
-	 * 
+	 *
 	 * このメソッドの処理には、入力文字コードの変換(UTF-8へ統一)などの整形処理が含まれます。
-	 * 
+	 *
 	 * @return bool 常に `true`
 	 */
 	private function parse_input(){
@@ -179,7 +184,7 @@ class request{
 
 	/**
 	 *	入力値に対する標準的な変換処理
-	 * 
+	 *
 	 * @param array $param パラメータ
 	 * @return array 変換後のパラメータ
 	 */
@@ -214,10 +219,10 @@ class request{
 
 	/**
 	 * パラメータを取得する。
-	 * 
+	 *
 	 * `$_GET`, `$_POST`、`$_FILES` を合わせた連想配列の中から `$key` に当たる値を引いて返します。
 	 * キーが定義されていない場合は、`null` を返します。
-	 * 
+	 *
 	 * @param string $key URLパラメータ名
 	 * @return mixed URLパラメータ値
 	 */
@@ -228,7 +233,7 @@ class request{
 
 	/**
 	 * パラメータをセットする。
-	 * 
+	 *
 	 * @param string $key パラメータ名
 	 * @param mixed $val パラメータ値
 	 * @return bool 常に `true`
@@ -253,6 +258,9 @@ class request{
 	 * @return string 指定されたオプション値
 	 */
 	public function get_cli_option( $name ){
+		if( !array_key_exists($name, $this->cli_options) ){
+			return null;
+		}
 		return @$this->cli_options[$name];
 	}
 
@@ -292,28 +300,33 @@ class request{
 
 	/**
 	 * クッキー情報を取得する。
-	 * 
+	 *
 	 * @param string $key クッキー名
 	 * @return mixed クッキーの値
 	 */
 	public function get_cookie( $key ){
+		if( @!is_array( $_COOKIE ) ){ return null; }
+		if( @!array_key_exists($key, $_COOKIE) ){ return null; }
 		return	@$_COOKIE[$key];
 	}//get_cookie()
 
 	/**
 	 * クッキー情報をセットする。
-	 * 
+	 *
 	 * @param string $key クッキー名
 	 * @param string $val クッキー値
 	 * @param string $expire クッキーの有効期限
 	 * @param string $path サーバー上での、クッキーを有効としたいパス
 	 * @param string $domain クッキーが有効なドメイン
-	 * @param bool $secure クライアントからのセキュアな HTTPS 接続の場合にのみクッキーが送信されるようにします
+	 * @param bool $secure クライアントからのセキュアな HTTPS 接続の場合にのみクッキーが送信されるようにします。デフォルトは `true`
 	 * @return 成功時 `true`、失敗時 `false` を返します。
 	 */
-	public function set_cookie( $key , $val , $expire = null , $path = null , $domain = null , $secure = false ){
+	public function set_cookie( $key , $val , $expire = null , $path = null , $domain = null , $secure = true ){
 		if( is_null( $path ) ){
-			$path = $this->get_path_current_dir();
+			$path = $this->conf->cookie_default_path;
+			if( !strlen( $path ) ){
+				$path = $this->get_path_current_dir();
+			}
 			if( !strlen( $path ) ){
 				$path = '/';
 			}
@@ -328,7 +341,7 @@ class request{
 
 	/**
 	 * クッキー情報を削除する。
-	 * 
+	 *
 	 * @param string $key クッキー名
 	 * @return bool 成功時 `true`、失敗時 `false` を返します。
 	 */
@@ -346,7 +359,7 @@ class request{
 
 	/**
 	 * セッションを開始する。
-	 * 
+	 *
 	 * @param string $sid セッションID。省略時、自動発行。
 	 * @return bool セッションが正常に開始した場合に `true`、それ以外の場合に `false` を返します。
 	 */
@@ -357,20 +370,26 @@ class request{
 		if( strlen( $this->conf->session_name ) ){
 			$session_name = $this->conf->session_name;
 		}
-		$path = $this->get_path_current_dir();
+		$path = $this->conf->cookie_default_path;
+		if( !strlen( $path ) ){
+			$path = $this->get_path_current_dir();
+		}
+		if( !strlen( $path ) ){
+			$path = '/';
+		}
 
-		session_name( $session_name );
-		session_cache_limiter( $cache_limiter );
-		session_cache_expire( intval($expire/60) );
+		@session_name( $session_name );
+		@session_cache_limiter( $cache_limiter );
+		@session_cache_expire( intval($expire/60) );
 
 		if( intval( ini_get( 'session.gc_maxlifetime' ) ) < $expire + 10 ){
 			// ガベージコレクションの生存期間が
 			// $expireよりも短い場合は、上書きする。
 			// バッファは固定値で10秒。
-			ini_set( 'session.gc_maxlifetime' , $expire + 10 );
+			@ini_set( 'session.gc_maxlifetime' , $expire + 10 );
 		}
 
-		session_set_cookie_params( 0 , $path );
+		@session_set_cookie_params( 0 , $path );
 			//  セッションクッキー自体の寿命は定めない(=0)
 			//  そのかわり、SESSION_LAST_MODIFIED を新設し、自分で寿命を管理する。
 
@@ -469,6 +488,14 @@ class request{
 			}
 			$fileinfo['content'] = base64_encode( file_get_contents( $filepath ) );
 		}
+
+		if( @!is_array( $_SESSION ) ){
+			$_SESSION = array();
+		}
+		if( @!array_key_exists('FILE', $_SESSION) ){
+			$_SESSION['FILE'] = array();
+		}
+
 		$_SESSION['FILE'][$key] = $fileinfo;
 		return	true;
 	}
@@ -480,6 +507,15 @@ class request{
 	 */
 	public function get_uploadfile( $key ){
 		if(!strlen($key)){ return false; }
+		if( @!is_array( $_SESSION ) ){
+			return false;
+		}
+		if( @!array_key_exists('FILE', $_SESSION) ){
+			return false;
+		}
+		if( @!array_key_exists($key, $_SESSION['FILE']) ){
+			return false;
+		}
 
 		$rtn = @$_SESSION['FILE'][$key];
 		if( is_null( $rtn ) ){ return false; }
@@ -489,10 +525,13 @@ class request{
 	}
 	/**
 	 * セッションに保存されたファイル情報の一覧を取得する。
-	 * 
+	 *
 	 * @return array ファイル情報 を格納した連想配列
 	 */
 	public function get_uploadfile_list(){
+		if( @!array_key_exists('FILE', $_SESSION) ){
+			return false;
+		}
 		return	array_keys( $_SESSION['FILE'] );
 	}
 	/**
@@ -502,12 +541,15 @@ class request{
 	 * @return bool 常に `true` を返します。
 	 */
 	public function delete_uploadfile( $key ){
+		if( @!array_key_exists('FILE', $_SESSION) ){
+			return true;
+		}
 		unset( $_SESSION['FILE'][$key] );
 		return	true;
 	}
 	/**
 	 * セッションに保存されたファイルを全て削除する。
-	 * 
+	 *
 	 * @return bool 常に `true` を返します。
 	 */
 	public function delete_uploadfile_all(){
@@ -537,7 +579,7 @@ class request{
 
 	/**
 	 *  SSL通信か調べる
-	 * 
+	 *
 	 * @return bool SSL通信の場合 `true`、それ以外の場合 `false` を返します。
 	 */
 	public function is_ssl(){
@@ -550,7 +592,7 @@ class request{
 
 	/**
 	 * コマンドラインによる実行か確認する。
-	 * 
+	 *
 	 * @return bool コマンドからの実行の場合 `true`、ウェブからの実行の場合 `false` を返します。
 	 */
 	public function is_cmd(){
@@ -565,7 +607,7 @@ class request{
 
 	/**
 	 * 受け取ったテキストを、指定の文字セットに変換する。
-	 * 
+	 *
 	 * @param mixed $text テキスト
 	 * @param string $encode 変換後の文字セット。省略時、`mb_internal_encoding()` から取得
 	 * @param string $encodefrom 変換前の文字セット。省略時、自動検出
@@ -600,7 +642,7 @@ class request{
 	 *
 	 * この関数は、PHPの `stripslashes()` のラッパーです。
 	 * 配列を受け取ると再帰的に文字列を変換して返します。
-	 * 
+	 *
 	 * @param mixed $text テキスト
 	 * @return string クォートが元に戻されたテキスト
 	 */
@@ -636,3 +678,4 @@ class request{
 	}//get_path_current_dir()
 
 }
+
