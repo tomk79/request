@@ -5,27 +5,10 @@ A request management utilitiy for PHP.
 
 ## Usage
 
-Define `tomk79/request` in your `composer.json`.
-
-```json
-{
-    "require": {
-        "php": ">=5.3.0",
-        "tomk79/request": "0.*"
-    }
-}
-```
-
-Execute `composer install` command.
+Execute `composer require` command.
 
 ```bash
-$ composer install
-```
-
-Or update command.
-
-```bash
-$ composer update
+$ composer require tomk79/request;
 ```
 
 
