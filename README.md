@@ -56,7 +56,7 @@ $ composer run-script documentation
 
 ## Change log
 
-### tomk79/request v1.1.1 (リリース日未定)
+### tomk79/request v1.1.1 (2021/4/23)
 
 - 内部コードの細かい修正。
 

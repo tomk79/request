@@ -14,7 +14,7 @@
             "php ./vendor/phpunit/phpunit/phpunit"
         ],
         "documentation": [
-            "php ./vendor/phpdocumentor/phpdocumentor/bin/phpdoc --title \"tomk79/request API Document\" -d \"./php/\" -t \"./docs/\""
+            "php ./vendor/phpdocumentor/phpdocumentor/bin/phpdoc --title \"tomk79/request v1.1.1 API Document\" -d \"./php/\" -t \"./docs/\""
         ]
     } ,
     "require": {
