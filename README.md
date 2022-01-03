@@ -56,7 +56,7 @@ $ composer run-script documentation
 
 ## Change log
 
-### tomk79/request v1.2.0 (リリース日未定)
+### tomk79/request v1.2.0 (2022/1/4)
 
 - サポートするPHPのバージョンを `>=7.3.0` に変更。
 

@@ -3,7 +3,6 @@
     "description": "A request management utilitiy for PHP.",
     "keywords": [],
     "license": "MIT",
-    "minimum-stability": "dev",
     "authors": [
         {
             "name": "Tomoya Koyanagi",
@@ -15,12 +14,12 @@
             "php ./vendor/phpunit/phpunit/phpunit"
         ],
         "documentation": [
-            "php ./vendor/phpdocumentor/phpdocumentor/bin/phpdoc --title \"tomk79/request v1.2.0-alpha.1 API Document\" -d \"./php/\" -t \"./docs/\""
+            "php ./vendor/phpdocumentor/phpdocumentor/bin/phpdoc --title \"tomk79/request v1.2.0 API Document\" -d \"./php/\" -t \"./docs/\""
         ]
     } ,
     "require": {
         "php": ">=7.3.0",
-        "tomk79/filesystem": "~1.0"
+        "tomk79/filesystem": "~1.1"
     },
     "require-dev": {
         "phpunit/phpunit": "~9.5",
