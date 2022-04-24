@@ -21,6 +21,16 @@ Search.appendIndex(
             "summary": "\u5165\u529B\u5024\u306B\u5BFE\u3059\u308B\u6A19\u6E96\u7684\u306A\u5909\u63DB\u51E6\u7406",
             "url": "classes/tomk79-request.html#method_normalize_input"
         },                {
+            "fqsen": "\\tomk79\\request\u003A\u003Aget_method\u0028\u0029",
+            "name": "get_method",
+            "summary": "\u30E1\u30BD\u30C3\u30C9\u3092\u53D6\u5F97\u3059\u308B",
+            "url": "classes/tomk79-request.html#method_get_method"
+        },                {
+            "fqsen": "\\tomk79\\request\u003A\u003Aget_headers\u0028\u0029",
+            "name": "get_headers",
+            "summary": "\u30EA\u30AF\u30A8\u30B9\u30C8\u30D8\u30C3\u30C0\u5168\u4F53\u3092\u53D6\u5F97\u3059\u308B",
+            "url": "classes/tomk79-request.html#method_get_headers"
+        },                {
             "fqsen": "\\tomk79\\request\u003A\u003Aget_param\u0028\u0029",
             "name": "get_param",
             "summary": "\u30D1\u30E9\u30E1\u30FC\u30BF\u3092\u53D6\u5F97\u3059\u308B\u3002",

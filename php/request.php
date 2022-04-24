@@ -218,6 +218,32 @@ class request{
 	}//normalize_input()
 
 	/**
+	 * メソッドを取得する
+	 * @return string|boolean メソッド名。すべて小文字に変換されて返されます。コマンドラインから実行された場合は `command` が返されます。取得できない場合は `false` を返します。
+	 */
+	public function get_method(){
+		if( $this->is_cmd() ){
+			return 'command';
+		}
+		if( isset($this->conf->server['REQUEST_METHOD']) && is_string($this->conf->server['REQUEST_METHOD']) && strlen($this->conf->server['REQUEST_METHOD']) ){
+			return strtolower( $this->conf->server['REQUEST_METHOD'] );
+		}
+		return false;
+	}
+
+	/**
+	 * リクエストヘッダ全体を取得する
+	 * @return array|null リクエストヘッダーのリスト。コマンドラインから実行されている場合は `null` を返します。
+	 */
+	public function get_headers(){
+		if( $this->is_cmd() ){
+			return null;
+		}
+		$headers = getallheaders();
+		return $headers;
+	}
+
+	/**
 	 * パラメータを取得する。
 	 *
 	 * `$_GET`, `$_POST`、`$_FILES` を合わせた連想配列の中から `$key` に当たる値を引いて返します。
@@ -227,8 +253,13 @@ class request{
 	 * @return mixed URLパラメータ値
 	 */
 	public function get_param( $key ){
-		if( !array_key_exists($key, $this->param) ){ return null; }
-		return @$this->param[$key];
+		if( !array_key_exists($key, $this->param) ){
+			return null;
+		}
+		if( !isset( $this->param[$key] ) ){
+			return null;
+		}
+		return $this->param[$key];
 	}//get_param()
 
 	/**
@@ -261,7 +292,10 @@ class request{
 		if( !array_key_exists($name, $this->cli_options) ){
 			return null;
 		}
-		return @$this->cli_options[$name];
+		if( !isset( $this->cli_options[$name] ) ){
+			return null;
+		}
+		return $this->cli_options[$name];
 	}
 
 	/**
@@ -269,7 +303,7 @@ class request{
 	 * @return array すべてのコマンドラインオプション
 	 */
 	public function get_cli_options(){
-		return @$this->cli_options;
+		return $this->cli_options;
 	}
 
 	/**
@@ -283,7 +317,10 @@ class request{
 			// 配列の最後から数える
 			$idx = count($this->cli_params)+$idx;
 		}
-		return @$this->cli_params[$idx];
+		if( !isset( $this->cli_params[$idx] ) ){
+			return null;
+		}
+		return $this->cli_params[$idx];
 	}
 
 	/**
@@ -291,7 +328,7 @@ class request{
 	 * @return array すべてのコマンドラインパラメータ
 	 */
 	public function get_cli_params(){
-		return @$this->cli_params;
+		return $this->cli_params;
 	}
 
 
@@ -305,9 +342,10 @@ class request{
 	 * @return mixed クッキーの値
 	 */
 	public function get_cookie( $key ){
-		if( @!is_array( $_COOKIE ) ){ return null; }
-		if( @!array_key_exists($key, $_COOKIE) ){ return null; }
-		return	@$_COOKIE[$key];
+		if( !isset( $_COOKIE[$key] ) ){
+			return null;
+		}
+		return	$_COOKIE[$key];
 	}//get_cookie()
 
 	/**
@@ -428,9 +466,10 @@ class request{
 	 * @return mixed `$key` に対応するセッション値
 	 */
 	public function get_session( $key ){
-		if( @!is_array( $_SESSION ) ){ return null; }
-		if( @!array_key_exists($key, $_SESSION) ){ return null; }
-		return @$_SESSION[$key];
+		if( !isset( $_SESSION[$key] ) ){
+			return null;
+		}
+		return $_SESSION[$key];
 	}//get_session()
 
 	/**
@@ -503,7 +542,7 @@ class request{
 	 * セッションに保存されたファイル情報を取得する。
 	 *
 	 * @param string $key セッションキー
-	 * @return array|bool 成功時、ファイル情報 を格納した連想配列、失敗時 `false` を返します。
+	 * @return array|boolean 成功時、ファイル情報 を格納した連想配列、失敗時 `false` を返します。
 	 */
 	public function get_uploadfile( $key ){
 		if(!strlen(''.$key)){ return false; }
@@ -565,7 +604,10 @@ class request{
 	 * @return string USER_AGENT
 	 */
 	public function get_user_agent(){
-		return @$this->conf->server['HTTP_USER_AGENT'];
+		if( !isset($this->conf->server['HTTP_USER_AGENT']) ){
+			return null;
+		}
+		return $this->conf->server['HTTP_USER_AGENT'];
 	}//get_user_agent()
 
 	/**
