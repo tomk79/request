@@ -56,7 +56,7 @@ $ composer run-script documentation
 
 ## Change log
 
-### tomk79/request v1.3.0 (リリース日未定)
+### tomk79/request v1.3.0 (2022/4/24)
 
 - `get_method()` を追加。
 - `get_headers()` を追加。

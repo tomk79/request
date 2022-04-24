@@ -31,6 +31,11 @@ Search.appendIndex(
             "summary": "\u30EA\u30AF\u30A8\u30B9\u30C8\u30D8\u30C3\u30C0\u5168\u4F53\u3092\u53D6\u5F97\u3059\u308B",
             "url": "classes/tomk79-request.html#method_get_headers"
         },                {
+            "fqsen": "\\tomk79\\request\u003A\u003Aget_header\u0028\u0029",
+            "name": "get_header",
+            "summary": "\u30EA\u30AF\u30A8\u30B9\u30C8\u30D8\u30C3\u30C0\u3092\u53D6\u5F97\u3059\u308B",
+            "url": "classes/tomk79-request.html#method_get_header"
+        },                {
             "fqsen": "\\tomk79\\request\u003A\u003Aget_param\u0028\u0029",
             "name": "get_param",
             "summary": "\u30D1\u30E9\u30E1\u30FC\u30BF\u3092\u53D6\u5F97\u3059\u308B\u3002",
