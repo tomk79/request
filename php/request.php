@@ -233,11 +233,14 @@ class request{
 
 	/**
 	 * リクエストヘッダ全体を取得する
-	 * @return array|null リクエストヘッダーのリスト。コマンドラインから実行されている場合は `null` を返します。
+	 * @return array|boolean|null リクエストヘッダーのリスト。コマンドラインから実行されている場合は `null` を返します。`getallheaders` が実行できない場合 `false` を返します。
 	 */
 	public function get_headers(){
 		if( $this->is_cmd() ){
 			return null;
+		}
+		if( !is_callable('getallheaders') ){
+			return false;
 		}
 		$headers = getallheaders();
 		return $headers;
@@ -253,9 +256,6 @@ class request{
 	 * @return mixed URLパラメータ値
 	 */
 	public function get_param( $key ){
-		if( !array_key_exists($key, $this->param) ){
-			return null;
-		}
 		if( !isset( $this->param[$key] ) ){
 			return null;
 		}

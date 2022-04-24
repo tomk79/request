@@ -50,6 +50,8 @@ class mainTest extends PHPUnit\Framework\TestCase{
 		);
 		$req = new tomk79\request( $conf );
 		$this->assertTrue( $req->is_cmd() );
+		$this->assertEquals( $req->get_method(), 'command' );
+		$this->assertNull( $req->get_headers() );
 		$this->assertEquals( $req->get_cli_param(0), 'param 1' );
 		$this->assertEquals( $req->get_cli_param(1), 'param 2' );
 		$this->assertEquals( $req->get_cli_param(2), 'param 3' );
@@ -88,12 +90,42 @@ class mainTest extends PHPUnit\Framework\TestCase{
 		);
 		$req = new tomk79\request( $conf );
 		$this->assertTrue( $req->is_cmd() );
+		$this->assertEquals( $req->get_method(), 'command' );
 		$this->assertEquals( $req->get_param('test1'), '123' );
 		$this->assertEquals( $req->get_param('test2'), 'あいうえお' );
 		$this->assertEquals( $req->get_param('get2'), 'get_val_2' );
 		$this->assertEquals( $req->get_param('post2'), 'post_val_2' );
 		$this->assertEquals( $req->get_cli_param(), '/?test1=123&test2='.urlencode('あいうえお') );
 		$this->assertEquals( $req->get_cli_option('-a'), 'TEST AGENT 1.0' );
+		$this->assertNull( $req->get_user_agent() );//コマンドラインではセットされない
+		$this->assertEquals( $req->get_request_file_path(), '/index.html' );
+
+	}
+
+
+	/**
+	 * ウェブオプションをつけてみるテスト
+	 */
+	public function testWebOptions(){
+		$conf = json_decode('{}');
+		$conf->server = $_SERVER;
+		$conf->server['REMOTE_ADDR'] = 'localhost';
+		$conf->server['REQUEST_METHOD'] = 'POST';
+		$conf->get = array(
+			'get1'=>'get_val_1',
+			'get2'=>'get_val_2',
+		);
+		$conf->post = array(
+			'post1'=>'post_val_1',
+			'post2'=>'post_val_2',
+		);
+		unset($conf->server['argv']);
+		$req = new tomk79\request( $conf );
+		$this->assertFalse( $req->is_cmd() ); // `REMOTE_ADDR` が存在する場合、CLIとはみなされない
+		$this->assertEquals( $req->get_method(), 'post' );
+		$this->assertFalse( $req->get_headers() );
+		$this->assertEquals( $req->get_param('get2'), 'get_val_2' );
+		$this->assertEquals( $req->get_param('post2'), 'post_val_2' );
 		$this->assertNull( $req->get_user_agent() );//コマンドラインではセットされない
 		$this->assertEquals( $req->get_request_file_path(), '/index.html' );
 
