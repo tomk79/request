@@ -247,6 +247,34 @@ class request{
 	}
 
 	/**
+	 * リクエストヘッダを取得する
+	 *
+	 * @param string $name ヘッダー名。`get_header()` は、大文字/小文字を区別しません。
+	 * @param boolean $ignore_case `true` が指定された場合、 `get_header()` は、 `$name` の大文字/小文字を区別せずに検索します。デフォルトは `true` です。
+	 * @return string|boolean|null リクエストヘッダーの値。
+	 * 与えられた名前に該当する項目がない場合、コマンドラインから実行されている場合は `null` を返します。
+	 * `getallheaders` が実行できない場合、その他ヘッダー情報全体にアクセスできない場合は `false` を返します。
+	 */
+	public function get_header( $name, $ignore_case = true ){
+		$headers = $this->get_headers();
+		if( !is_array($headers) ){
+			return $headers;
+		}
+		if( $ignore_case ){
+			$name = strtolower( $name );
+		}
+		foreach( $headers as $header_key => $header_val ){
+			if( $ignore_case ){
+				$header_key = strtolower( $header_key );
+			}
+			if( $name == $header_key ){
+				return $header_val;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * パラメータを取得する。
 	 *
 	 * `$_GET`, `$_POST`、`$_FILES` を合わせた連想配列の中から `$key` に当たる値を引いて返します。

@@ -10,6 +10,9 @@
         }
     ],
     "scripts":{
+        "start": [
+            "php -S 127.0.0.1:8088 -t ./tests/testpage/"
+        ],
         "test": [
             "php ./vendor/phpunit/phpunit/phpunit"
         ],

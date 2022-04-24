@@ -60,6 +60,7 @@ $ composer run-script documentation
 
 - `get_method()` を追加。
 - `get_headers()` を追加。
+- `get_header()` を追加。
 - 内部コードの細かい修正。
 
 ### tomk79/request v1.2.0 (2022/1/4)
