@@ -34,5 +34,10 @@
                 "php"
             ]
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "symfony/flex": true
+        }
     }
 }

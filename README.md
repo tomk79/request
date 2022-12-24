@@ -56,6 +56,10 @@ $ composer run-script documentation
 
 ## Change log
 
+### tomk79/request v1.3.1 (リリース日未定)
+
+- `.gitattributes` を追加。
+
 ### tomk79/request v1.3.0 (2022/4/24)
 
 - `get_method()` を追加。
