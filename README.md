@@ -56,7 +56,7 @@ $ composer run-script documentation
 
 ## Change log
 
-### tomk79/request v1.3.1 (リリース日未定)
+### tomk79/request v1.3.1 (2022/12/28)
 
 - `.gitattributes` を追加。
 
