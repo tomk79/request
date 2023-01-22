@@ -662,7 +662,7 @@ class request{
 	 * @return bool SSL通信の場合 `true`、それ以外の場合 `false` を返します。
 	 */
 	public function is_ssl(){
-		if( $this->conf->server['HTTP_SSL'] ?? null || $this->conf->server['HTTPS'] ?? null ){
+		if( ($this->conf->server['HTTP_SSL'] ?? null) || ($this->conf->server['HTTPS'] ?? null) ){
 			// SSL通信が有効か否か判断
 			return true;
 		}
