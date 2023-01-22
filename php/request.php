@@ -430,6 +430,10 @@ class request{
 	 * @return bool セッションが正常に開始した場合に `true`、それ以外の場合に `false` を返します。
 	 */
 	private function session_start( $sid = null ){
+		if( $this->is_cmd() ){
+			// CLIではセッションを開始しない
+			return false;
+		}
 		if(isset($_SESSION)){
 			// すでにセッションが開始されていたらここ終了する。
 			return true;
@@ -658,7 +662,7 @@ class request{
 	 * @return bool SSL通信の場合 `true`、それ以外の場合 `false` を返します。
 	 */
 	public function is_ssl(){
-		if( @$this->conf->server['HTTP_SSL'] || @$this->conf->server['HTTPS'] ){
+		if( $this->conf->server['HTTP_SSL'] ?? null || $this->conf->server['HTTPS'] ?? null ){
 			// SSL通信が有効か否か判断
 			return true;
 		}

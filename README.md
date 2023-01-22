@@ -59,6 +59,7 @@ $ composer run-script documentation
 ### tomk79/request v1.3.2 (リリース日未定)
 
 - セッションを2重に開始しようとしたときにPHPエラーが起きる不具合を修正。
+- その他、内部コードの細かい修正。
 
 ### tomk79/request v1.3.1 (2022/12/28)
 
