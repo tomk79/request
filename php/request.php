@@ -430,6 +430,11 @@ class request{
 	 * @return bool セッションが正常に開始した場合に `true`、それ以外の場合に `false` を返します。
 	 */
 	private function session_start( $sid = null ){
+		if(isset($_SESSION)){
+			// すでにセッションが開始されていたらここ終了する。
+			return true;
+		}
+
 		$expire = intval($this->conf->session_expire);
 		$cache_limiter = 'nocache';
 		$session_name = 'SESSID';
@@ -476,7 +481,7 @@ class request{
 		}
 		$this->set_session( 'SESSION_LAST_MODIFIED' , time() );
 		return $rtn;
-	}//session_start()
+	} //session_start()
 
 	/**
 	 * セッションIDを取得する。
