@@ -131,12 +131,12 @@ class request{
 						array_push( $this->cli_params, $this->conf->server['argv'][$i] );
 					}
 				}
-				$tmp_path = @$this->cli_params[count($this->cli_params)-1];
-				if( preg_match( '/^\//', $tmp_path ) && @is_array($this->conf->server['argv']) ){
+				$tmp_path = $this->cli_params[count($this->cli_params)-1] ?? null;
+				if( preg_match( '/^\//', $tmp_path ?? '' ) && is_array($this->conf->server['argv'] ?? null) ){
 					$tmp_path = array_pop( $this->conf->server['argv'] );
 					$tmp_path = parse_url($tmp_path);
 					$this->request_file_path = $tmp_path['path'];
-					@parse_str( $tmp_path['query'], $query );
+					parse_str( $tmp_path['query'] ?? '', $query );
 					if( is_array($query) ){
 						$this->conf->get = array_merge( $this->conf->get, $query );
 					}
