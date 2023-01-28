@@ -381,13 +381,14 @@ class request{
 	 *
 	 * @param string $key クッキー名
 	 * @param string $val クッキー値
-	 * @param string $expire クッキーの有効期限
-	 * @param string $path サーバー上での、クッキーを有効としたいパス
-	 * @param string $domain クッキーが有効なドメイン
-	 * @param bool $secure クライアントからのセキュアな HTTPS 接続の場合にのみクッキーが送信されるようにします。デフォルトは `true`
+	 * @param string $expire クッキーの有効期限。デフォルトは `0`
+	 * @param string $path サーバー上での、クッキーを有効としたいパス。デフォルトは `/`
+	 * @param string $domain クッキーが有効なドメイン。デフォルトは空白文字
+	 * @param bool $secure `true` を設定し、クライアントからのセキュアな HTTPS 接続の場合にのみクッキーが送信されるようにします。デフォルトは `true`
+	 * @param bool $httponly `true` を設定し、HTTPでの送信のみ許可し、JavaScriptから参照できないようにします。デフォルトは `true`
 	 * @return 成功時 `true`、失敗時 `false` を返します。
 	 */
-	public function set_cookie( $key , $val , $expire = null , $path = null , $domain = null , $secure = true ){
+	public function set_cookie( $key , $val , $expire = null , $path = null , $domain = null , $secure = true, $httponly = true ){
 		if( is_null( $path ) ){
 			$path = $this->conf->cookie_default_path;
 			if( !strlen( ''.$path ) ){
@@ -397,13 +398,13 @@ class request{
 				$path = '/';
 			}
 		}
-		if( !@setcookie( $key , $val , $expire , $path , $domain , $secure ) ){
+		if( !@setcookie( $key , $val , $expire ?? 0 , $path ?? '/' , $domain ?? '' , $secure ?? true, $httponly ?? true ) ){
 			return false;
 		}
 
 		$_COOKIE[$key] = $val;//現在の処理からも呼び出せるように
 		return true;
-	}//set_cookie()
+	}
 
 	/**
 	 * クッキー情報を削除する。
@@ -754,6 +755,6 @@ class request{
 		$rtn = str_replace('\\','/',$rtn);
 		$rtn .= ($rtn!='/'?'/':'');
 		return $rtn;
-	}//get_path_current_dir()
+	}
 
 }
