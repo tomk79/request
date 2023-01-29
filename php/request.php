@@ -51,26 +51,23 @@ class request{
 	 *
 	 * @param object $conf 設定オブジェクト
 	 */
-	public function __construct($conf=null){
-		$this->conf = $conf;
-		if( !is_object($this->conf) ){
-			$this->conf = json_decode('{}');
-		}
+	public function __construct( $conf = null ){
+		$this->conf = (object) array();
 		$this->fs = new \tomk79\filesystem();
 
-		$this->conf->get = $this->conf->get ?? $_GET;
-		$this->conf->post = $this->conf->post ?? $_POST;
-		$this->conf->files = $this->conf->files ?? $_FILES;
-		$this->conf->server = $this->conf->server ?? $_SERVER;
+		$this->conf->get = $conf->get ?? $_GET ?? array();
+		$this->conf->post = $conf->post ?? $_POST ?? array();
+		$this->conf->files = $conf->files ?? $_FILES ?? array();
+		$this->conf->server = $conf->server ?? $_SERVER ?? array();
 		$this->conf->server['PATH_INFO'] = $this->conf->server['PATH_INFO'] ?? null;
 		$this->conf->server['HTTP_USER_AGENT'] = $this->conf->server['HTTP_USER_AGENT'] ?? null;
 		$this->conf->server['argv'] = $this->conf->server['argv'] ?? null;
-		$this->conf->directory_index_primary = $this->conf->directory_index_primary ?? 'index.html';
-		$this->conf->cookie_default_path = $this->conf->cookie_default_path ?? $this->get_path_current_dir(); // NOTE: Cookieのデフォルトのパス。session の範囲もこの設定に従う。
-		$this->conf->cookie_default_domain = $this->conf->cookie_default_domain ?? null; // NOTE: v1.4.0 で追加
-		$this->conf->cookie_default_expire = $this->conf->cookie_default_expire ?? (7 * 24 * 60 * 60); // NOTE: v1.4.0 で追加
-		$this->conf->session_name = $this->conf->session_name ?? 'SESSID';
-		$this->conf->session_expire = $this->conf->session_expire ?? $this->conf->cookie_default_expire;
+		$this->conf->directory_index_primary = $conf->directory_index_primary ?? 'index.html';
+		$this->conf->cookie_default_path = $conf->cookie_default_path ?? $this->get_path_current_dir(); // NOTE: Cookieのデフォルトのパス。session の範囲もこの設定に従う。
+		$this->conf->cookie_default_domain = $conf->cookie_default_domain ?? null; // NOTE: v1.4.0 で追加
+		$this->conf->cookie_default_expire = $conf->cookie_default_expire ?? (7 * 24 * 60 * 60); // NOTE: v1.4.0 で追加
+		$this->conf->session_name = $conf->session_name ?? 'SESSID';
+		$this->conf->session_expire = $conf->session_expire ?? $this->conf->cookie_default_expire;
 
 		$this->parse_input();
 		$this->session_start();
