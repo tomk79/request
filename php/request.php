@@ -454,8 +454,8 @@ class request{
 			if( $last_modified_time < intval( time() - $expire ) ){
 				// セッションの有効期限が切れていたら、セッションを破壊する。
 				$_SESSION = array();
-			}elseif( $last_modified_time < intval( time() - $expire + 600 ) ){
-				// セッションの有効期限が残り 10分 を切っていたら、セッションを再発行し延長する。
+			}elseif( $last_modified_time < intval( time() - ($expire/2) ) ){
+				// セッションの有効期限が残り 半分 を切っていたら、セッションを再発行し延長する。
 				$this->session_update();
 				$this->delete_session( $last_modified_time_key ); // 一旦削除
 			}
