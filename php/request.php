@@ -454,26 +454,15 @@ class request{
 			@ini_set( 'session.gc_maxlifetime' , $expire + 10 );
 		}
 
-		@session_set_cookie_params( 0 , $path );
-			//  セッションクッキー自体の寿命は定めない(=0)
-			//  そのかわり、SESSION_LAST_MODIFIED を新設し、自分で寿命を管理する。
+		@session_set_cookie_params( $expire, $path );
 
-		if( strlen( ''.$sid ) ){
+		if( strlen( $sid ?? '' ) ){
 			// セッションIDに指定があれば、有効にする。
 			session_id( $sid );
 		}
 
 		// セッションを開始
 		$rtn = @session_start();
-
-		// セッションの有効期限を評価
-		if( strlen( ''.$this->get_session( 'SESSION_LAST_MODIFIED' ) ) && intval( $this->get_session( 'SESSION_LAST_MODIFIED' ) ) < intval( time() - $expire ) ){
-			#	セッションの有効期限が切れていたら、セッションキーを再発行。
-			if( is_callable('session_regenerate_id') ){
-				@session_regenerate_id( true );
-			}
-		}
-		$this->set_session( 'SESSION_LAST_MODIFIED' , time() );
 		return $rtn;
 	}
 
