@@ -416,10 +416,9 @@ class request{
 	/**
 	 * セッションを開始する。
 	 *
-	 * @param string $sid セッションID。省略時、自動発行。
 	 * @return bool セッションが正常に開始した場合に `true`、それ以外の場合に `false` を返します。
 	 */
-	private function session_start( $sid = null ){
+	private function session_start(){
 		if( $this->is_cmd() ){
 			// CLIではセッションを開始しない
 			return false;
@@ -430,7 +429,6 @@ class request{
 		}
 
 		$expire = intval($this->conf->session_expire);
-		$cache_limiter = 'nocache';
 		$session_name = 'SESSID';
 		if( strlen( $this->conf->session_name ?? '' ) ){
 			$session_name = $this->conf->session_name;
@@ -444,22 +442,7 @@ class request{
 		}
 
 		@session_name( $session_name );
-		@session_cache_limiter( $cache_limiter );
-		@session_cache_expire( intval($expire/60) );
-
-		if( intval( ini_get( 'session.gc_maxlifetime' ) ) < $expire + 10 ){
-			// ガベージコレクションの生存期間が
-			// $expireよりも短い場合は、上書きする。
-			// バッファは固定値で10秒。
-			@ini_set( 'session.gc_maxlifetime' , $expire + 10 );
-		}
-
 		@session_set_cookie_params( $expire, $path );
-
-		if( strlen( $sid ?? '' ) ){
-			// セッションIDに指定があれば、有効にする。
-			session_id( $sid );
-		}
 
 		// セッションを開始
 		$rtn = @session_start();
