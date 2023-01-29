@@ -446,7 +446,38 @@ class request{
 
 		// セッションを開始
 		$rtn = @session_start();
+
+		// セッションの有効期限を評価
+		$last_modified_time_key = 'SESSION_STARTED_AT';
+		if( strlen( $this->get_session( $last_modified_time_key ) ?? '' ) ){
+			$last_modified_time = intval( $this->get_session( $last_modified_time_key ) );
+			if( $last_modified_time < intval( time() - $expire ) ){
+				// セッションの有効期限が切れていたら、セッションを破壊する。
+				$_SESSION = array();
+			}elseif( $last_modified_time < intval( time() - $expire + 600 ) ){
+				// セッションの有効期限が残り 10分 を切っていたら、セッションを再発行し延長する。
+				$this->session_update();
+				$this->delete_session( $last_modified_time_key ); // 一旦削除
+			}
+		}
+		if( !strlen( $this->get_session( $last_modified_time_key ) ?? '' ) ){
+			$this->set_session( $last_modified_time_key, time() );
+		}
+
 		return $rtn;
+	}
+
+	/**
+	 * セッションを更新する。
+	 *
+	 * @return boolean 成功した場合に `true` を、失敗した場合に `false` を返します。 
+	 */
+	public function session_update(){
+		$destroyed_time_key = 'SESSION_DESTROYED_AT';
+		$_SESSION[$destroyed_time_key] = time();
+		$result = session_regenerate_id();
+		unset($_SESSION[$destroyed_time_key]);
+		return $result;
 	}
 
 	/**

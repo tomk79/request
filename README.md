@@ -65,6 +65,8 @@ $ composer run-script documentation
 - `cookie_default_domain` オプションを追加した。
 - `session_expire` が省略された場合、 `cookie_default_expire` の値を参照するようになった。
 - セッションを2重に開始しようとしたときにPHPエラーが起きる不具合を修正。
+- `session_update()` を追加した。
+- セッションの予約後に、 `SESSION_LAST_MODIFIED` を廃止し、 `SESSION_STARTED_AT`, `SESSION_DESTROYED_AT` を追加した。
 - その他、内部コードの細かい修正。
 
 ### tomk79/request v1.3.1 (2022/12/28)
