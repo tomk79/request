@@ -28,10 +28,11 @@ $req = new tomk79\request();
 <?php
 require_once('./vendor/autoload.php');
 $req = new tomk79\request(array(
-  'session_name'=>'SESSID',
-  'session_expire'=>1800,
-  'directory_index_primary'=>'index.html',
-  'cookie_default_path'=>'/'
+  'session_name' => 'SESSID',
+  'session_expire' => (24 * 60 * 60),
+  'directory_index_primary' => 'index.html',
+  'cookie_default_path' => '/',
+  'cookie_default_expire' => (7 * 24 * 60 * 60),
 ));
 ```
 
@@ -58,8 +59,12 @@ $ composer run-script documentation
 
 ### tomk79/request v1.4.0 (リリース日未定)
 
-- セッションを2重に開始しようとしたときにPHPエラーが起きる不具合を修正。
 - `set_cookie()` で、第7引数 `$httponly` を指定できるようになった。
+- `set_cookie()` で、第3引数以降を、まとめて連想配列で指定できるようになった。
+- `cookie_default_expire` オプションを追加した。
+- `cookie_default_domain` オプションを追加した。
+- `session_expire` が省略された場合、 `cookie_default_expire` の値を参照するようになった。
+- セッションを2重に開始しようとしたときにPHPエラーが起きる不具合を修正。
 - その他、内部コードの細かい修正。
 
 ### tomk79/request v1.3.1 (2022/12/28)

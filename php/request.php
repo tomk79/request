@@ -65,13 +65,12 @@ class request{
 		$this->conf->server['PATH_INFO'] = $this->conf->server['PATH_INFO'] ?? null;
 		$this->conf->server['HTTP_USER_AGENT'] = $this->conf->server['HTTP_USER_AGENT'] ?? null;
 		$this->conf->server['argv'] = $this->conf->server['argv'] ?? null;
-		$this->conf->session_name = $this->conf->session_name ?? 'SESSID';
-		$this->conf->session_expire = $this->conf->session_expire ?? 1800;
 		$this->conf->directory_index_primary = $this->conf->directory_index_primary ?? 'index.html';
-
-		// クッキーのデフォルトのパス
-		// session の範囲もこの設定に従う。
-		$this->conf->cookie_default_path = $this->conf->cookie_default_path ?? $this->get_path_current_dir();
+		$this->conf->cookie_default_path = $this->conf->cookie_default_path ?? $this->get_path_current_dir(); // NOTE: Cookieのデフォルトのパス。session の範囲もこの設定に従う。
+		$this->conf->cookie_default_domain = $this->conf->cookie_default_domain ?? null; // NOTE: v1.4.0 で追加
+		$this->conf->cookie_default_expire = $this->conf->cookie_default_expire ?? (7 * 24 * 60 * 60); // NOTE: v1.4.0 で追加
+		$this->conf->session_name = $this->conf->session_name ?? 'SESSID';
+		$this->conf->session_expire = $this->conf->session_expire ?? $this->conf->cookie_default_expire;
 
 		$this->parse_input();
 		$this->session_start();
@@ -360,28 +359,42 @@ class request{
 	 *
 	 * @param string $key クッキー名
 	 * @param string $val クッキー値
-	 * @param string $expire クッキーの有効期限。デフォルトは `0`
+	 * @param string $expires_or_options クッキーの有効期限。
 	 * @param string $path サーバー上での、クッキーを有効としたいパス。デフォルトは `/`
-	 * @param string $domain クッキーが有効なドメイン。デフォルトは空白文字
+	 * @param string $domain クッキーが有効なドメイン。
 	 * @param bool $secure `true` を設定し、クライアントからのセキュアな HTTPS 接続の場合にのみクッキーが送信されるようにします。デフォルトは `true`
 	 * @param bool $httponly `true` を設定し、HTTPでの送信のみ許可し、JavaScriptから参照できないようにします。デフォルトは `true`
 	 * @return 成功時 `true`、失敗時 `false` を返します。
 	 */
-	public function set_cookie( $key , $val , $expire = null , $path = null , $domain = null , $secure = true, $httponly = true ){
-		if( is_null( $path ) ){
-			$path = $this->conf->cookie_default_path;
-			if( !strlen( $path ?? '' ) ){
-				$path = $this->get_path_current_dir();
-			}
-			if( !strlen( $path ?? '' ) ){
-				$path = '/';
-			}
+	public function set_cookie( $key , $val , $expires_or_options = null , $path = null , $domain = null , $secure = true, $httponly = true ){
+		$options = array();
+		if( is_array($expires_or_options) ){
+			$options = $expires_or_options;
+		}elseif( is_int($expires_or_options) ){
+			$options['expires'] = $expires_or_options;
 		}
-		if( !@setcookie( $key , $val , $expire ?? 0 , $path ?? '/' , $domain ?? '' , $secure ?? true, $httponly ?? true ) ){
+		$options['expires'] = $options['expires'] ?? $this->conf->cookie_default_expire;
+		$options['expires'] += time();
+		$options['path'] = $options['path'] ?? $path ?? $this->get_path_current_dir() ?? '/';
+
+		if( !isset($options['domain']) && strlen($domain ?? '') ){
+			$options['domain'] = $domain;
+		}
+		if( !strlen($options['domain'] ?? '') ){
+			$options['domain'] = $this->conf->cookie_default_domain;
+		}
+		if( !isset($options['secure']) && !is_null($secure) ){
+			$options['secure'] = !!$secure;
+		}
+		if( !isset($options['httponly']) && !is_null($httponly) ){
+			$options['httponly'] = !!$httponly;
+		}
+
+		if( !@setcookie( $key, $val, $options ) ){
 			return false;
 		}
 
-		$_COOKIE[$key] = $val;//現在の処理からも呼び出せるように
+		$_COOKIE[$key] = $val; // 現在の処理からも呼び出せるように
 		return true;
 	}
 
