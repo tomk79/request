@@ -57,7 +57,7 @@ $ composer run-script documentation
 
 ## Change log
 
-### tomk79/request v1.4.0 (リリース日未定)
+### tomk79/request v1.4.0 (2023/2/5)
 
 - `set_cookie()` で、第7引数 `$httponly` を指定できるようになった。
 - `set_cookie()` で、第3引数以降を、まとめて連想配列で指定できるようになった。

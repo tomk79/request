@@ -91,6 +91,11 @@ Search.appendIndex(
             "summary": "\u30BB\u30C3\u30B7\u30E7\u30F3\u3092\u958B\u59CB\u3059\u308B\u3002",
             "url": "classes/tomk79-request.html#method_session_start"
         },                {
+            "fqsen": "\\tomk79\\request\u003A\u003Asession_update\u0028\u0029",
+            "name": "session_update",
+            "summary": "\u30BB\u30C3\u30B7\u30E7\u30F3\u3092\u66F4\u65B0\u3059\u308B\u3002",
+            "url": "classes/tomk79-request.html#method_session_update"
+        },                {
             "fqsen": "\\tomk79\\request\u003A\u003Aget_session_id\u0028\u0029",
             "name": "get_session_id",
             "summary": "\u30BB\u30C3\u30B7\u30E7\u30F3ID\u3092\u53D6\u5F97\u3059\u308B\u3002",
