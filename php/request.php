@@ -361,7 +361,7 @@ class request{
 	 * @param string $domain クッキーが有効なドメイン。
 	 * @param bool $secure `true` を設定し、クライアントからのセキュアな HTTPS 接続の場合にのみクッキーが送信されるようにします。デフォルトは `true`
 	 * @param bool $httponly `true` を設定し、HTTPでの送信のみ許可し、JavaScriptから参照できないようにします。デフォルトは `true`
-	 * @return 成功時 `true`、失敗時 `false` を返します。
+	 * @return bool 成功時 `true`、失敗時 `false` を返します。
 	 */
 	public function set_cookie( $key , $val , $expires_or_options = null , $path = null , $domain = null , $secure = true, $httponly = true ){
 		$options = array();
@@ -387,7 +387,7 @@ class request{
 			$options['httponly'] = !!$httponly;
 		}
 
-		if( !@setcookie( $key, $val, $options ) ){
+		if( !@setcookie( $key, $val ?? '', $options ) ){
 			return false;
 		}
 
@@ -402,7 +402,7 @@ class request{
 	 * @return bool 成功時 `true`、失敗時 `false` を返します。
 	 */
 	public function delete_cookie( $key ){
-		if( !@setcookie( $key , null, 0 ) ){
+		if( !@setcookie( $key , '', 0 ) ){
 			return false;
 		}
 		unset( $_COOKIE[$key] );

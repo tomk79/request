@@ -57,6 +57,10 @@ $ composer run-script documentation
 
 ## Change log
 
+### tomk79/request v1.4.1 (リリース日未定)
+
+- `set_cookie()`、 `delete_cookie()` で `null` が渡されて発生するエラーを修正。
+
 ### tomk79/request v1.4.0 (2023/2/5)
 
 - `set_cookie()` で、第7引数 `$httponly` を指定できるようになった。
