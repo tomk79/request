@@ -57,7 +57,7 @@ $ composer run-script documentation
 
 ## Change log
 
-### tomk79/request v1.4.1 (リリース日未定)
+### tomk79/request v1.4.1 (2023/5/1)
 
 - `set_cookie()`、 `delete_cookie()` で `null` が渡されて発生するエラーを修正。
 
